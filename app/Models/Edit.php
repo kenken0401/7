@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Models\Products;
 
 class Edit extends Model
 {
@@ -25,5 +26,22 @@ class Edit extends Model
         return $companies;
 
     }
+
+    public function updateList($products){
+        
+        $items = Products::where('id', '=', $products['products_id'])
+        ->update([
+        'product_name' => $products['product_name'],
+        'company_id' => $products['company_id'],
+        'price' => $products['price'],
+        'stock' => $products['stock'],
+        'comment' => $products['comment'],
+        'img_path' => $products['img_path'],
+        ]);
+
+        return $items;
+
+    }
+
 
 }

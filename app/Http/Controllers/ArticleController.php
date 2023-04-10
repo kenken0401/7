@@ -8,8 +8,15 @@ use App\Models\Article;
 class ArticleController extends Controller
 {
     public function showList(){
-        $model = new Article();
-        $product = $model->getList();
+        DB::beginTransaction();
+        
+        try{
+            $model = new Article();
+            $product = $model->getList();
+        } catch(/Exception $e){
+            DB::rollback();
+            return back();
+        }
 
         return view('home',['product' => $product]);
     }

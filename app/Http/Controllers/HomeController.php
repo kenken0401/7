@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Home;
 use App\Models\Companies;
 use App\Models\Products;
-use App\Models\Sales;
-use Illuminate\Support\Facades\Log;
 
 
 class HomeController extends Controller
@@ -27,44 +26,47 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
-    {
-        return view('home');
-    }
 
     public function postIndex(Request $request){
 
-        $company = $request->input('company_id');
-        $keyword = $request->input('keyword');
-
-        $query = Companies::query();
-
-        $query->join('products','products.company_id','=','companies.id')
-        ->get();
-
-        $model = new Home();
-        $companies = $model->getCompanies();
-
-        if(!empty($company)) {
-            $query->where('company_id', 'LIKE', $company);
+        DB::beginTransaction();
+        
+        try{
+            $company = $request->input('company_id');
+            $keyword = $request->input('keyword');
+            $model = new Home();
+            $companies = $model->getCompanies();
+            $query = Companies::query();
+            $query = $model->getList($query);
+            
+            if(!empty($company)) {
+                $query->where('company_id', 'LIKE', $company);
+            }
+            if(!empty($keyword)) {
+                $query->where('product_name', 'LIKE', "%{$keyword}%");
+            }
+            $items = $query->get();
+            DB::commit();    
+        } catch(\Exception $e){
+            DB::rollback();
+            return back();
         }
-
-        if(!empty($keyword)) {
-            $query->where('product_name', 'LIKE', "%{$keyword}%");
-        }
-
-        $items = $query->get();
-
+        
         return view('home', compact('items', 'keyword', 'company','companies'));
-
     }
 
     public function delete($id){
 
-        $delTable = Products::find($id);
-        $delTable->delete();
-
+        DB::beginTransaction();
+        
+        try{
+            $delTable = Products::find($id);
+            $delTable->delete();
+            DB::commit();    
+        } catch(\Exception $e){
+            DB::rollback();
+            return back();
+        }
         return redirect('home');
-
     }
 }

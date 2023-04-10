@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Edit;
 use App\Models\Products;
@@ -10,11 +11,18 @@ use App\Models\Products;
 class EditController extends Controller
 {
     public function showEdit($id){
-
-        $model = new Edit();
-        $items = $model->getList($id);
-        $companies = $model->getCompanies();
-
+        
+        DB::beginTransaction();
+        
+        try{
+            $model = new Edit();
+            $items = $model->getList($id);
+            $companies = $model->getCompanies();
+            DB::commit();    
+        } catch(\Exception $e){
+            DB::rollback();
+            return back();
+        }
         return view('edit', ['items' => $items, 'companies' => $companies]);
     }
 
@@ -27,17 +35,18 @@ class EditController extends Controller
             'stock' => 'required',
         ]);
 
-        $products = Products::find($id);
-        $products->product_name = $request->product_name;
-        $products->company_id = $request->company_id;
-        $products->price = $request->price;
-        $products->stock = $request->stock;
-        $products->comment = $request->comment;
-        $products->img_path = $request->img_path;
-        $products->update();
+        DB::beginTransaction();
 
-        return redirect(route('edit',$id));
-
+        try{
+            $products = $request->post();
+            $model = new Edit();
+            $items = $model->updateList($products);
+            DB::commit();    
+        } catch(\Exception $e){
+            DB::rollback();
+            return back();
+        }
+        return redirect(route('edit', $id, ['items' => $items]));
     }
 
 }

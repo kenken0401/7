@@ -2,20 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Detail;
-use App\Models\Companies;
-use App\Models\Products;
-use App\Models\Sales;
 
 class DetailController extends Controller
 {
     
     public function showDetail($id){
 
-        $model = new Detail();
-        $details = $model->getList($id);
-    
+        DB::beginTransaction();
+        
+        try{
+            $model = new Detail();
+            $details = $model->getList($id);    
+            DB::commit();    
+        } catch(\Exception $e){
+            DB::rollback();
+            return back();
+        }
         return view('detail', ['details' => $details]);
     }
 }

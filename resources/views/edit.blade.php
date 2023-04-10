@@ -29,7 +29,7 @@
           </thead>
           <tbody>
               <tr>
-                  <td>{{ $items->product_id }}</td>
+                  <td><input type = "hidden" name = "products_id" value = "{{ $items->product_id }}">{{ $items->product_id }}</td>
                   <td><input type = "text" name = "product_name" value="{{ $items->product_name }}"></td>
                   <td>
                     <select name = "company_id">

@@ -17,7 +17,6 @@
                                 @endforeach
                             </select><br>
                             <input type = "submit" class = "btn" value = "検索">
-
                         </form>
                     </div>
                     <a href="{{ url('/signup') }}"><input type='button' value='新規登録'></a>
