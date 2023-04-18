@@ -17,8 +17,8 @@ class SignUpController extends Controller
         DB::beginTransaction();
 
         try{
-            $model = new SignUp();
-            $companies = $model->getList();
+            $c_model = new Companies();
+            $companies = $c_model->getCompanies();
                 DB::commit();    
         } catch(\Exception $e){
             DB::rollback();
@@ -39,27 +39,16 @@ class SignUpController extends Controller
         DB::beginTransaction();
 
         try{
-            $product = new Products();
-            $product->product_name = $request->product_name;
-            $product->company_id = $request->company_id;
-            $product->price = $request->price;
-            $product->stock = $request->stock;
-            $product->comment = $request->comment;
-            $product->img_path = $request->img_path;
-            $product->save();
-            
-            $product_id = $product->id;
-            $sale = new Sales();
-            $sale->product_id = $product_id;
-            $sale->save();
-    
+            $products = $request->post();
+            $p_model = new Products();
+            $items = $p_model->insertList($products);
             DB::commit();    
         } catch(\Exception $e){
             DB::rollback();
             return back();
         }
         return redirect('signup');
+
     }
-
-
+            
 }

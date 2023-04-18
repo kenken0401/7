@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Edit;
 use App\Models\Products;
-
+use App\Models\Companies;
 
 class EditController extends Controller
 {
@@ -15,9 +15,10 @@ class EditController extends Controller
         DB::beginTransaction();
         
         try{
-            $model = new Edit();
-            $items = $model->getList($id);
-            $companies = $model->getCompanies();
+            $p_model = new Products();
+            $c_model = new Companies();
+            $items = $p_model->getEdit($id);
+            $companies = $c_model->getCompanies();
             DB::commit();    
         } catch(\Exception $e){
             DB::rollback();
@@ -39,8 +40,8 @@ class EditController extends Controller
 
         try{
             $products = $request->post();
-            $model = new Edit();
-            $items = $model->updateList($products);
+            $p_model = new Products();
+            $items = $p_model->updateList($products);
             DB::commit();    
         } catch(\Exception $e){
             DB::rollback();

@@ -34,10 +34,11 @@ class HomeController extends Controller
         try{
             $company = $request->input('company_id');
             $keyword = $request->input('keyword');
-            $model = new Home();
-            $companies = $model->getCompanies();
+            $c_model = new Companies();
+            $companies = $c_model->getCompanies();
             $query = Companies::query();
-            $query = $model->getList($query);
+            $p_model = new Products();
+            $query = $p_model->getList($query);
             
             if(!empty($company)) {
                 $query->where('company_id', 'LIKE', $company);

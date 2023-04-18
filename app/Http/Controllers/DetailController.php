@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Detail;
+use App\Models\Products;
 
 class DetailController extends Controller
 {
@@ -14,8 +15,8 @@ class DetailController extends Controller
         DB::beginTransaction();
         
         try{
-            $model = new Detail();
-            $details = $model->getList($id);    
+            $p_model = new Products();
+            $details = $p_model->getDetail($id);    
             DB::commit();    
         } catch(\Exception $e){
             DB::rollback();
